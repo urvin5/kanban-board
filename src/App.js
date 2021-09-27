@@ -1,7 +1,7 @@
 import "./App.css";
 import Board from "react-trello";
 import { useEffect, useState } from "react";
-
+import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
 
 function App() {
@@ -10,9 +10,9 @@ function App() {
   });
   const [tasksDAta, setTasksData] = useState([]);
 
-  function getCount(clgname) {
+  function getTaskOfColumn(columnId) {
     const counts = tasksDAta.map((task) => {
-      if (task.column_id === clgname) {
+      if (task.column_id === columnId) {
         return { ...task, title: task.name };
       }
     });
@@ -38,17 +38,26 @@ function App() {
             return {
               id: index,
               title: el.name || "New column",
-              cards: getCount(el.id),
+              cards: getTaskOfColumn(el.id),
             };
           }),
         });
       });
   }, [tasksDAta]);
 
+  //To add columns
+  const [formData, setFormData] = useState({
+    id: uuidv4(),
+    title: "",
+    cards: [],
+  });
   function addNewColumn() {
     setColumnsData({
       ...columnsData,
-      lanes: [...columnsData?.lanes, { id: "abc", title: "Urvin", cards: [] }],
+      lanes: [
+        ...columnsData?.lanes,
+        { id: formData.id, title: formData.title, cards: formData.cards },
+      ],
     });
   }
 
